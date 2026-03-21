@@ -3,9 +3,7 @@
  * Provides persistent state management by automatically saving to browser's localStorage
  * Any changes to state are automatically saved and restored on page reload
  *
- * @param {String} key - The key name to store in localStorage
- * @param {*} initialValue - The default value if nothing is stored yet
- * @returns {Array} - [storedValue, setValue] - similar API to useState
+
  */
 
 // Import React hooks for state management

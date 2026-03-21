@@ -28,7 +28,6 @@ export default function Dashboard() {
    */
   const [semesters, setSemesters] = useState([]);
 
- 
   const MAX_SEMESTERS = 2;
 
   /**
@@ -42,11 +41,14 @@ export default function Dashboard() {
 
     try {
       // Make POST request to backend to create semester
-      const res = await fetch("http://localhost:3000/api/semesters", {
-        method: "POST", // POST = create new resource
-        headers: { "Content-Type": "application/json" }, // Tell server we're sending JSON
-        body: JSON.stringify({ name, courses: [] }), // Send semester name and empty courses array
-      });
+      const res = await fetch(
+        `http://${import.meta.env.VITE_API_URL}/api/semesters`,
+        {
+          method: "POST", // POST = create new resource
+          headers: { "Content-Type": "application/json" }, // Tell server we're sending JSON
+          body: JSON.stringify({ name, courses: [] }), // Send semester name and empty courses array
+        },
+      );
 
       // Check if HTTP status is not OK (2xx success codes)
       if (!res.ok) throw new Error(`API error ${res.status}`);
@@ -76,7 +78,9 @@ export default function Dashboard() {
     const fetchSemesters = async () => {
       try {
         // Make GET request to fetch all semesters from MongoDB
-        const res = await fetch("http://localhost:3000/api/semesters");
+        const res = await fetch(
+          `http://${import.meta.env.VITE_API_URL}/api/semesters`,
+        );
         const data = await res.json(); // Parse response as JSON array
 
         /**
@@ -139,7 +143,7 @@ export default function Dashboard() {
 
       // Make POST request to add course to this semester
       const res = await fetch(
-        `http://localhost:3000/api/semesters/${semesterId}/courses`, // endpoint includes semester ID
+        `http://${import.meta.env.VITE_API_URL}/api/semesters/${semesterId}/courses`, // endpoint includes semester ID
         {
           method: "POST", // POST = create new resource
           headers: {

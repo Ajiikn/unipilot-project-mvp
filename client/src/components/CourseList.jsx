@@ -35,7 +35,7 @@ export default function CourseList({
 
       // Make DELETE request to backend API
       await fetch(
-        `http://localhost:3000/api/semesters/${semesterId}/courses/${courseId}`,
+        `http://${import.meta.env.VITE_API_URL}/api/semesters/${semesterId}/courses/${courseId}`,
         {
           method: "DELETE",
         },
@@ -45,7 +45,9 @@ export default function CourseList({
        * After successful deletion, refetch all semesters to ensure consistency
        * Backend returns updated data, update React state
        */
-      const res = await fetch("http://localhost:3000/api/semesters");
+      const res = await fetch(
+        `http://${import.meta.env.VITE_API_URL}/api/semesters`,
+      );
       const data = await res.json();
       setSemesters(data); // Update state with fresh data from backend
     } catch (error) {
@@ -80,7 +82,7 @@ export default function CourseList({
         semesters[editSemesterIndex].courses[editCourseIndex]._id;
 
       await fetch(
-        `http://localhost:3000/api/semesters/${semesterId}/courses/${courseId}`,
+        `http://${import.meta.env.VITE_API_URL}/api/semesters/${semesterId}/courses/${courseId}`,
         {
           method: "PUT",
           headers: {
@@ -94,7 +96,9 @@ export default function CourseList({
        * After successful update, refetch all semesters from backend
        * Ensures data is consistent and up-to-date
        */
-      const res = await fetch("http://localhost:3000/api/semesters");
+      const res = await fetch(
+        `http://${import.meta.env.VITE_API_URL}/api/semesters`,
+      );
       const data = await res.json();
       setSemesters(data);
 
