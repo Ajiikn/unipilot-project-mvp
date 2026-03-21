@@ -20,7 +20,9 @@ const PORT = process.env.PORT || 3000;
  */
 
 // Enable CORS - allows requests from different domains/ports (e.g., frontend port 5173 → backend port 3000)
-app.use(cors());
+app.use(cors({
+  origin: "https://unipilot-project-mvp.vercel.app"
+}));
 
 // Parse incoming JSON request bodies and make them available as req.body
 // Without this, JSON data in requests wouldn't be accessible
