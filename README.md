@@ -21,6 +21,10 @@ A full-stack web application that helps university students track their GPA and 
 
 ## Screenshots
 
+### Login Page — CGPA Login
+
+![Login Page](./screenshots/login-page.png)
+
 ### Dashboard — CGPA Overview
 
 ![Dashboard](./screenshots/dashboard.png)
@@ -131,6 +135,7 @@ unipilot-project-mvp/
 ├── client/                 # React frontend
 │   ├── src/
 │   │   ├── components/     # Reusable UI components
+|   |   ├── context/        # Authentication
 │   │   ├── pages/          # Dashboard page
 │   │   ├── hooks/          # Custom React hooks
 │   │   └── utils/          # GPA calculation utilities
@@ -138,6 +143,7 @@ unipilot-project-mvp/
 │
 └── server/                 # Express backend
     ├── models/             # Mongoose schema
+    ├── middleware/         # Authentication
     ├── controllers/        # Business logic
     ├── routes/             # API routes
     └── package.json
@@ -154,6 +160,9 @@ unipilot-project-mvp/
 | POST   | `/api/semesters/:id/courses`           | Add a course to a semester |
 | PUT    | `/api/semesters/:id/courses/:courseId` | Update a course            |
 | DELETE | `/api/semesters/:id/courses/:courseId` | Delete a course            |
+| POST   | `/api/auth/register`                   | Register a user            |
+| POST   | `/api/auth/login`                      | Login a user               |
+| POST   | `/api/auth/logout`                     | Logout a user              |
 
 ---
 
