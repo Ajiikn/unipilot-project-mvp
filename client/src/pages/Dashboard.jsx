@@ -1,10 +1,13 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { useAuth } from "../context/AuthContext";
 import { useLocalStorage } from "../hooks/localstorage";
 import CourseForm from "../components/CourseForm";
 import GpaDisplay from "../components/GpaDisplay";
 import SemesterCard from "../components/SemesterCard";
 
 export default function Dashboard() {
+  const { username, logout: handleLogout } = useAuth();
+
   /**
    * Grading scale state - persisted to localStorage so it's remembered between sessions
    * Defaults to 5.0 scale if not previously set
@@ -30,6 +33,15 @@ export default function Dashboard() {
 
   const MAX_SEMESTERS = 2;
 
+  // Helper function to get auth token
+  const getAuthHeader = () => {
+    const token = localStorage.getItem("authToken");
+    return {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    };
+  };
+
   /**
    * createSemester Function - Creates a new semester and saves to MongoDB
    */
@@ -43,7 +55,7 @@ export default function Dashboard() {
       // Make POST request to backend to create semester
       const res = await fetch(`${import.meta.env.VITE_API_URL}/api/semesters`, {
         method: "POST", // POST = create new resource
-        headers: { "Content-Type": "application/json" }, // Tell server we're sending JSON
+        headers: getAuthHeader(), // Include auth token
         body: JSON.stringify({ name, courses: [] }), // Send semester name and empty courses array
       });
 
@@ -63,12 +75,15 @@ export default function Dashboard() {
     }
   };
 
+  const hasFetched = useRef(false);
   /**
    * useEffect Hook - Runs ONCE when component first mounts (loads)
    * Fetches all semesters from MongoDB, or creates defaults if none exist
    * Empty dependency array [] means this runs only once on mount
    */
   useEffect(() => {
+    if (hasFetched.current) return; // 🛡️ block the second StrictMode call
+    hasFetched.current = true;
     /**
      * fetchSemesters Async Function - Gets semesters from the backend
      */
@@ -77,6 +92,7 @@ export default function Dashboard() {
         // Make GET request to fetch all semesters from MongoDB
         const res = await fetch(
           `${import.meta.env.VITE_API_URL}/api/semesters`,
+          { headers: getAuthHeader() },
         );
         const data = await res.json(); // Parse response as JSON array
 
@@ -143,9 +159,7 @@ export default function Dashboard() {
         `${import.meta.env.VITE_API_URL}/api/semesters/${semesterId}/courses`, // endpoint includes semester ID
         {
           method: "POST", // POST = create new resource
-          headers: {
-            "Content-Type": "application/json", // Sending JSON data
-          },
+          headers: getAuthHeader(), // Include auth token
           body: JSON.stringify(newCourse), // Convert course object to JSON string
         },
       );
@@ -213,6 +227,20 @@ export default function Dashboard() {
   return (
     // Main container div with gap between sections (space-y-8 = 8 units of space between child elements)
     <div className="space-y-8">
+      {/* User Header Section - Shows username and logout button */}
+      <div className="bg-white rounded-lg shadow-md p-6 flex items-center justify-between">
+        <div>
+          <p className="text-sm text-gray-600">Logged in as:</p>
+          <p className="text-lg font-semibold text-gray-800">{username}</p>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition"
+        >
+          Logout
+        </button>
+      </div>
+
       {/* 1. GPA Display Section - Shows overall CGPA, classification, target goals */}
       <GpaDisplay
         semesters={semesters} // Pass all semesters for CGPA calculation

@@ -3,6 +3,7 @@ dotenv.config();
 const express = require("express");
 const mongoose = require("mongoose");
 const semesterRoutes = require("./routes/semester.Routes");
+const authRoutes = require("./routes/auth.Routes");
 // Import CORS middleware for Cross-Origin Resource Sharing (allows frontend to call API)
 const cors = require("cors");
 
@@ -20,14 +21,25 @@ const PORT = process.env.PORT || 3000;
  */
 
 // Enable CORS - allows requests from different domains/ports (e.g., frontend port 5173 → backend port 3000)
-app.use(cors({
-  origin: "https://unipilot-project-mvp.vercel.app"
-}));
+app.use(
+  cors({
+    origin: [
+      "https://unipilot-project-mvp.vercel.app", // Production
+      "http://localhost:5173", // Local Vite dev server
+      "http://localhost:5176", // Alternative local port
+      "http://localhost:3000", // Local backend
+      "http://127.0.0.1:5173", // Alternative localhost
+      "http://127.0.0.1:5176", // Alternative localhost alt port
+    ],
+    credentials: true,
+  }),
+);
 
 // Parse incoming JSON request bodies and make them available as req.body
 // Without this, JSON data in requests wouldn't be accessible
 app.use(express.json());
 
+app.use("/api/auth", authRoutes);
 app.use("/api", semesterRoutes);
 
 app.get("/", (req, res) => {

@@ -1,6 +1,15 @@
 import { useState } from "react";
 import { cleanCourse } from "../utils/cleanCourse";
 
+// Helper function to get auth headers
+const getAuthHeader = () => {
+  const token = localStorage.getItem("authToken");
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${token}`,
+  };
+};
+
 export default function CourseList({
   semester, // The semester object with courses array
   semesters, // All semesters array for reference
@@ -38,6 +47,7 @@ export default function CourseList({
         `${import.meta.env.VITE_API_URL}/api/semesters/${semesterId}/courses/${courseId}`,
         {
           method: "DELETE",
+          headers: getAuthHeader(),
         },
       );
 
@@ -45,8 +55,11 @@ export default function CourseList({
        * After successful deletion, refetch all semesters to ensure consistency
        * Backend returns updated data, update React state
        */
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/semesters`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/semesters`, {
+        headers: getAuthHeader(),
+      });
       const data = await res.json();
+      setSemesters(data.slice(0, 2));
       setSemesters(data); // Update state with fresh data from backend
     } catch (error) {
       console.log(error); // Log error but silently fail (UX could be improved)
@@ -83,9 +96,7 @@ export default function CourseList({
         `${import.meta.env.VITE_API_URL}/api/semesters/${semesterId}/courses/${courseId}`,
         {
           method: "PUT",
-          headers: {
-            "Content-Type": "application/json", // Sending JSON
-          },
+          headers: getAuthHeader(),
           body: JSON.stringify(cleanCourse(tempCourse)), // Clean and send updated data
         },
       );
@@ -94,9 +105,11 @@ export default function CourseList({
        * After successful update, refetch all semesters from backend
        * Ensures data is consistent and up-to-date
        */
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/semesters`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/api/semesters`, {
+        headers: getAuthHeader(),
+      });
       const data = await res.json();
-      setSemesters(data);
+      setSemesters(data.slice(0, 2));
 
       /**
        * Clear edit mode and reset tempCourse

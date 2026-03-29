@@ -3,11 +3,12 @@ const Semester = require("../models/Semester");
 /**
  * getAllSemesters Controller
  * GET /api/semesters
- * Retrieves all semesters from the database
+ * Retrieves all semesters for the authenticated user
  */
 const getAllSemesters = async (req, res) => {
   try {
-    const semesters = await Semester.find({});
+    // Filter semesters by the authenticated user's ID
+    const semesters = await Semester.find({ userId: req.user.userId });
 
     res.status(200).json(semesters);
   } catch (error) {
@@ -18,7 +19,7 @@ const getAllSemesters = async (req, res) => {
 /**
  * createSemester Controller
  * POST /api/semesters
- * Creates a new semester in the database
+ * Creates a new semester in the database for the authenticated user
  */
 const createSemester = async (req, res) => {
   try {
@@ -30,9 +31,10 @@ const createSemester = async (req, res) => {
 
     /**
      * Create new Semester instance with provided data
+     * Include userId from authenticated user
      * This doesn't save to database yet, just creates instance in memory
      */
-    const newSemester = new Semester({ name, courses });
+    const newSemester = new Semester({ userId: req.user.userId, name, courses });
 
     /**
      * Save semester to MongoDB database
